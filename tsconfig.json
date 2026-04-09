@@ -18,11 +18,13 @@
         "name": "next"
       }
     ],
+    "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
       "@/*": ["./*"]
     }
   },
+
   "include": [
     "next-env.d.ts",
     "**/*.ts",
@@ -30,5 +32,7 @@
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules"]
+  "types": ["unplugin-icons/types/react"],
+  "exclude": ["node_modules"],
+  "allowArbitraryExtensions": true
 }
