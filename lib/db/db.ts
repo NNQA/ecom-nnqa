@@ -7,8 +7,13 @@ export function createDb() {
     if (process.env.DATABASE_URL == null) {
         throw new Error("DATABASE_URL is not defined");
     }
-    const db = postgres(process.env.DATABASE_URL);
-    console.log(process.env.DATABASE_URL)
+    const db = postgres(process.env.DATABASE_URL, {
+        ssl: 'require',
+        max: 1,
+        idle_timeout: 20,
+        connect_timeout: 10,
+        prepare: false
+    });
     return db;
 }
 const db = remember("db", () => {

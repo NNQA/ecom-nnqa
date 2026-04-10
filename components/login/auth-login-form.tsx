@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
 import ProgressButtonLoading from '../ui/progress-button';
@@ -10,6 +9,9 @@ import { useForm } from '@tanstack/react-form';
 import { toast } from 'sonner';
 import InputCustomIcon from '../ui/input-icon';
 import { IconMail, IconShieldLock } from '@tabler/icons-react';
+import { signIn } from '@/app/login/actions';
+import BoxAlert from '../box-alert';
+import { useState } from 'react';
 
 
 export const formLoignSchema = z.object(
@@ -34,10 +36,7 @@ export const formLoignSchema = z.object(
 type FormLoginValues = z.infer<typeof formLoignSchema>
 
 export function AuthForm() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [isLoading, setIsLoading] = useState(false);
-
+    const [error, setError] = useState<string | null>(null)
     const form = useForm({
         defaultValues: {
             email: '',
@@ -46,10 +45,16 @@ export function AuthForm() {
         validators: {
             onSubmit: formLoignSchema,
         },
-        onSubmit: async (values) => {
-            console.log("asdd")
-            toast.success("Form submitted successfully")
-
+        onSubmit: async ({ value }) => {
+            await signIn({
+                email: value.email,
+                password: value.password,
+            }).then(() => {
+                toast.success("Login successful")
+            }
+            ).catch((error) => {
+                setError(error.message || "Failed to sign in. Try again");
+            })
         }
     });
     return (
@@ -68,6 +73,9 @@ export function AuthForm() {
                     form.handleSubmit(e)
                 }}
                 className="flex flex-col gap-4">
+                {
+                    error && <BoxAlert message={error} />
+                }
                 <FieldGroup className="space-y-2">
                     <form.Field
                         name="email"
@@ -107,9 +115,18 @@ export function AuthForm() {
                                 field.state.meta.isTouched && !field.state.meta.isValid
                             return (
                                 <Field>
-                                    <FieldLabel htmlFor="password" className="text-sm font-medium text-foreground">
-                                        Password
-                                    </FieldLabel>
+                                    <div className='flex justify-between items-center'>
+                                        <FieldLabel htmlFor="password" className="text-sm font-medium text-foreground">
+                                            Password
+                                        </FieldLabel>
+                                        <FieldLabel htmlFor="password" className="text-xs font-medium">
+                                            <Link
+                                                href="#"
+                                            >
+                                                Forgot password?
+                                            </Link>
+                                        </FieldLabel>
+                                    </div>
                                     <InputCustomIcon
                                         type="password"
                                         placeholder="••••••••"
@@ -132,13 +149,20 @@ export function AuthForm() {
                         }}
                     />
                 </FieldGroup>
-                <ProgressButtonLoading
-                    type="submit"
-                    state={isLoading}
-                    className="mt-2 h-11 w-full rounded-lg bg-primary font-semibold text-primary-foreground transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 disabled:scale-100 disabled:opacity-60"
-                    mainText="Sign In"
-                    loadingText='Logging in...'
-                />
+                <form.Subscribe
+                    selector={(formState) => [formState.canSubmit, formState.isSubmitting]}>
+                    {
+                        ([canSubmit, isSubmitting]) => (
+                            <ProgressButtonLoading
+                                type="submit"
+                                state={isSubmitting}
+                                className="mt-2 h-11 w-full rounded-lg bg-primary font-semibold text-primary-foreground transition-all duration-200 hover:scale-105 hover:shadow-lg active:scale-95 disabled:scale-100 disabled:opacity-60"
+                                mainText="Sign In"
+                                loadingText='Logging in...'
+                            />
+                        )
+                    }
+                </form.Subscribe>
             </form>
 
             <div className="flex items-center gap-4">
@@ -150,19 +174,19 @@ export function AuthForm() {
             <div className="flex flex-col gap-3">
                 <button className="flex items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 py-2.5 transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95">
                     <svg className="h-5 w-5" viewBox="0 0 24 24">
-                        <path
-                            fill="currentColor"
-                            d="M12.48 10.92v3.28h7.84c-.24 1.84-.853 3.187-1.787 4.133-1.147 1.147-2.933 2.4-6.053 2.4-4.827 0-8.6-3.893-8.6-8.72s3.773-8.72 8.6-8.72c2.6 0 4.507 1.027 5.907 2.347l2.307-2.307C18.747 1.44 16.133 0 12.48 0 5.867 0 .307 5.387.307 12s5.56 12 12.173 12c3.573 0 6.267-1.173 8.373-3.36 2.16-2.16 2.84-5.213 2.84-7.667 0-.76-.053-1.467-.173-2.053H12.48z"
-                        />
+                        <path fill="#EA4335" d="M5.2662 9.76453C6.19903 6.93863 8.85469 4.90909 12 4.90909C13.6909 4.90909 15.2182 5.50909 16.4182 6.49091L19.9091 3C17.7818 1.14545 15.0545 0 12 0C7.30909 0 3.25455 2.87273 1.27273 7.03636L5.2662 9.76453Z" />
+                        <path fill="#FBBC05" d="M1.27273 7.03636L5.2662 9.76453C4.23333 12.8939 4.23333 16.3061 5.2662 19.4355L1.27273 22.1636C.463636 20.4909 0 18.6182 0 16.6364C0 12.5091 2.05455 8.85455 5.2662 7.03636V7.03636Z" />
+                        <path fill="#34A853" d="M12 24C15.1091 24 17.9091 22.9818 19.9818 21.2364L16.0364 18.1636C14.8909 18.9273 13.5273 19.3818 12 19.3818C8.85469 19.3818 6.19903 17.3523 5.2662 14.5264L1.27273 17.2545C3.25455 21.1273 7.30909 24 12 24Z" />
+                        <path fill="#4285F4" d="M23.4909 12.2727C23.4909 11.4909 23.4182 10.7091 23.2727 9.94545H12V14.5091H18.4727C18.1818 16.0182 17.3273 17.3091 16.0364 18.1636L19.9818 21.2364C22.3091 19.1091 23.4909 15.9636 23.4909 12.2727Z" />
                     </svg>
-                    <span className="text-sm font-medium">Continue with Google</span>
+                    <span className="text-sm font-bold text-gray-700">Continue with Google</span>
                 </button>
 
                 <button className="flex items-center justify-center gap-3 rounded-lg border border-border bg-background px-4 py-2.5 transition-all duration-200 hover:bg-muted hover:shadow-sm active:scale-95">
-                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
+                    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="#1877F2">
                         <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
                     </svg>
-                    <span className="text-sm font-medium">Continue with Facebook</span>
+                    <span className="text-sm font-bold text-gray-700">Continue with Facebook</span>
                 </button>
             </div>
 

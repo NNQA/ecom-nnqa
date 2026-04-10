@@ -1,21 +1,19 @@
 'use server';
 import { auth } from '@/lib/auth/server-auth';
-export async function signUpWithEmail(
-    _prevState: { error: string } | null,
-    formData: FormData
+interface SignInProps {
+    email: string;
+    password: string;
+}
+export async function signIn(
+    { email, password }: SignInProps
 ) {
-    const email = formData.get('email') as string;
-    if (!email) {
-        return { error: "Email address must be provided." }
-    }
-    const { error } = await auth.signUp.email({
+    const { error } = await auth.signIn.email({
         email,
-        name: "",
-        password: formData.get('password') as string,
+        password,
     });
-    console.log(error)
+
     if (error) {
-        return { error: error.message || 'Failed to create account' };
+        throw new Error(error.message || "Failed to sign in. Try again");
     }
 }
 
