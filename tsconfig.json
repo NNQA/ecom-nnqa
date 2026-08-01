@@ -30,7 +30,8 @@
     "**/*.ts",
     "**/*.tsx",
     ".next/types/**/*.ts",
-    ".next/dev/types/**/*.ts"
+    ".next/dev/types/**/*.ts",
+    "app/api/categories/seed"
   ],
   "types": ["unplugin-icons/types/react"],
   "exclude": ["node_modules"],

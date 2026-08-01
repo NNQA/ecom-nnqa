@@ -5,6 +5,9 @@ const nextConfig = {
   devIndicators: {
     buildActivity: false,
   },
+  images: {
+    domains: ["images.unsplash.com"],
+  },
 }
 
 export default nextConfig
