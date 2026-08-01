@@ -1,9 +1,8 @@
-import AuthLayout from "@/components/layouts/auth-layout";
-import { AuthForm } from "@/components/login/auth-login-form";
-import { useDb } from "@/lib/db/db";
+import AuthLayout from "@/shared/components/layouts/auth-layout";
+import { AuthForm } from "@/shared/components/login/auth-login-form";
+import { useDb } from "@/shared/lib/db/db.server";
 
 export default async function Page() {
-    const db = useDb();
     return (
         <AuthLayout>
             <AuthForm />
