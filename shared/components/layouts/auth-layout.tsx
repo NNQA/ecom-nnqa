@@ -18,7 +18,7 @@ function AuthLayout({ children }: AuthLayoutProps) {
                         <Logo size='lg' showText />
                     </div>
                     {children}
-                </div>s
+                </div>
             </div>
             <Footer />
         </div>

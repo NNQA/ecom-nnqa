@@ -1,3 +1,4 @@
+import { SingupLayout } from "@/domains/auth/components/signup/layout";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -65,8 +66,8 @@ export const metadata: Metadata = {
 
 export default function Layout({ children }: { children: React.ReactNode }) {
     return (
-        <section>
+        <SingupLayout>
             {children}
-        </section>
+        </SingupLayout>
     );
 }
