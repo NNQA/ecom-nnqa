@@ -1,7 +1,7 @@
+import SignupPage from "@/domains/auth/components/signup/page";
 
-
-export default function Page() {
+export default async function Page() {
     return (
-        <div></div>
+        <SignupPage />
     );
 }
