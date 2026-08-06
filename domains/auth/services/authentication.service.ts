@@ -6,25 +6,11 @@ import { redirect } from 'next/navigation';
 import { cookies } from 'next/headers';
 import { SignJWT, jwtVerify } from 'jose';
 
-interface SignInProps {
+interface SignUpProps {
     email: string;
     password: string;
+    username: string;
 }
-export async function signIn(
-    { email, password }: SignInProps
-) {
-    const { data, error } = await auth.signUp.email({
-        email: email,
-        password: password,
-        name: email.split("@")[0]
-    })
-    if (error) {
-        throw new Error(error.message || "Failed to sign in. Try again");
-    }
-}
-
-
-
 
 const secret = new TextEncoder().encode(process.env.SIGNUP_COOKIE_SECRET!);
 const COOKIE_NAME = 'signup_progress'
@@ -92,4 +78,40 @@ export async function checkEmailAvailability(email: string) {
         }
         throw new Error(`Failed to check email availability: ${error instanceof Error ? error.message : String(error)}`);
     }
+}
+export async function SignUpWithEmailAndPassword(email: string, password: string) {
+    try {
+        const { error } = await auth.signUp.email({
+            email,
+            name: email.split("@")[0],
+            password,
+        })
+
+        if (error) {
+            return { error: error.message || 'Failed to create account' };
+        }
+    } catch (error) {
+        throw new Error(`Failed to sign up: ${error instanceof Error ? error.message : String(error)}`);
+    }
+
+}
+
+
+export async function SignUp({ email, password, username }: SignUpProps) {
+    try {
+        const { error } = await auth.signUp.email({
+            email,
+            name: username ? username : email.split("@")[0],
+            password,
+        })
+        const sql = useDb();
+
+
+        if (error) {
+            return { error: error.message || 'Failed to create account' };
+        }
+    } catch (error) {
+        throw new Error(`Failed to sign up: ${error instanceof Error ? error.message : String(error)}`);
+    }
+
 }

@@ -4,7 +4,7 @@ import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 import BoxAlert from '@/shared/components/box-alert';
 import { useRouter } from "next/navigation";
-import { checkEmailAvailability, setEmailVerificationToken } from "../../services/authentication.service";
+import { SignUp } from "../../services/authentication.service";
 import { Button } from "@/shared/components/ui/button";
 import { Label } from "@/shared/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/shared/components/ui/select";
@@ -13,6 +13,7 @@ import { Field, FieldError, FieldGroup, FieldLabel } from "@/shared/components/u
 import { IconMail, IconShieldLock, IconUserCircle } from "@tabler/icons-react";
 import Link from "next/link";
 import ProgressButtonLoading from "@/shared/components/ui/progress-button";
+import { toast } from "sonner";
 
 
 interface SignupPageProps {
@@ -70,7 +71,17 @@ export default function SignupPage({
             onSubmit: formSingup,
         },
         onSubmit: async ({ value }) => {
-
+            await SignUp({
+                email: value.email,
+                password: value.password,
+                username: value.username
+            }).then(() => {
+                toast.success("Signup successful")
+                router.push("/verify")
+            }
+            ).catch((error) => {
+                setError(error.message || "Failed to sign in. Try again");
+            })
         }
     });
     return (

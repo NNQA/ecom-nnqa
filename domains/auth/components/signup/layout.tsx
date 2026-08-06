@@ -86,7 +86,7 @@ export function SingupLayout({ children }: { children: React.ReactNode }) {
                     )}
                 </div>
 
-                <div className="pointer-events-none absolute -bottom-10 left-16 h-56 w-56 rounded-[45%_55%_60%_40%/50%_45%_55%_50%] bg-gradient-to-br from-fuchsia-500 via-purple-500 to-indigo-500 blur-[1px]" />
+                <div className="pointer-events-none absolute -bottom-10 left-16 h-56 w-56 rounded-[45%_55%_60%_40%/50%_45%_55%_50%] bg-linear-to-br from-fuchsia-500 via-purple-500 to-indigo-500 blur-[1px]" />
             </div>
 
             {children}

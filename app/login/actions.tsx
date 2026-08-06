@@ -7,10 +7,9 @@ interface SignInProps {
 export async function signIn(
     { email, password }: SignInProps
 ) {
-    const { error } = await auth.signUp.email({
+    const { error } = await auth.signIn.email({
         email: email,
         password: password,
-        name: email.split("@")[0]
     })
 
     if (error) {
