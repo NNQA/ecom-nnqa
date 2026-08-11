@@ -1,4 +1,4 @@
-import { UsersPage } from "@/domains/user/components/admin/users-page"
+import { UsersPage } from "@/domains/user/components/admin/user/main-page"
 import {
   getAvailableRoles,
   getUsers,
@@ -15,6 +15,7 @@ type SearchParams = Promise<{
   status?: string
   role?: string
   page?: string
+  pageSize?: number
 }>
 
 export default async function Page({
@@ -32,6 +33,7 @@ export default async function Page({
         : undefined,
     roleId: isUuid(params.role) ? params.role : undefined,
     page: Math.max(Number(params.page) || 1, 1),
+    pageSize: params.pageSize ?? 7
   }
   const [result, roles] = await Promise.all([
     getUsers(filters),

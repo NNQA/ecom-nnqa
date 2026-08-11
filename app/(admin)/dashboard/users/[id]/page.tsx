@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation"
 
-import { UserProfile } from "@/domains/user/components/admin/user-profile"
+import { UserProfile } from "@/domains/user/components/admin/user/user-profile"
 import {
   getAvailableRoles,
   getUserProfile,

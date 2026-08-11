@@ -2,7 +2,10 @@ import { z } from "zod"
 
 export const permissionCodeSchema = z
   .string()
-  .regex(/^[a-z][a-z0-9_-]*:[a-z][a-z0-9_-]*$/, "Permission must use module:action format")
+  .regex(
+    /^[a-z][a-z0-9_-]*(?::[a-z][a-z0-9_-]*)+$/,
+    "Permission must use colon-separated lowercase segments"
+  )
 
 export const roleCodeSchema = z
   .string()
@@ -14,9 +17,6 @@ export const assignRoleSchema = z.object({
 })
 
 export type AssignRoleInput = z.infer<typeof assignRoleSchema>
-
-
-
 
 export interface ProfileDto {
   userId: string
@@ -38,7 +38,7 @@ export interface ProfileDto {
   updatedAt: Date
 }
 export interface RoleDto {
-  id: number
+  id: string
 
   code: string
 
@@ -52,7 +52,7 @@ export interface RoleDto {
 }
 
 export interface PermissionDto {
-  id: number
+  id: string
 
   code: string
 
@@ -65,11 +65,11 @@ export interface PermissionDto {
 export interface UserRoleDto {
   userId: string
 
-  roleId: number
+  roleId: string
 }
 
 export interface RolePermissionDto {
-  roleId: number
+  roleId: string
 
-  permissionId: number
+  permissionId: string
 }

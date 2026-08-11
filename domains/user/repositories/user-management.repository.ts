@@ -45,7 +45,7 @@ export async function findUsers(
   filters: UserListFilters = {}
 ): Promise<UserListResultDto> {
   const sql = getDb()
-  const pageSize = Math.min(Math.max(filters.pageSize ?? 20, 1), 100)
+  const pageSize = Math.min(Math.max(filters.pageSize ?? 10, 1), 100)
   const page = Math.max(filters.page ?? 1, 1)
   const offset = (page - 1) * pageSize
   const pattern = listUserQuery(filters)
