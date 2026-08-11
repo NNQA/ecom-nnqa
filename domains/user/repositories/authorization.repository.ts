@@ -1,15 +1,20 @@
 import "server-only"
 
-import { useDb } from "@/shared/lib/db/db.server"
+import { useDb as getDb } from "@/shared/lib/db/db.server"
 
-import type { PermissionCode, UserWithRolesAndPermissions } from "../entities/auth.entities"
+import type {
+  PermissionCode,
+  UserWithRolesAndPermissions,
+} from "../entities/auth.entities"
+import { findAuthUserById } from "./user.repository"
 
 type CodeRow = { code: string }
-type RoleIdRow = { id: number }
-type UserRow = { id: string; email: string | null; name: string | null }
+type RoleIdRow = { id: string }
 
-export async function getPermissionsByUserId(userId: string): Promise<PermissionCode[]> {
-  const sql = useDb()
+export async function getPermissionsByUserId(
+  userId: string
+): Promise<PermissionCode[]> {
+  const sql = getDb()
   const rows = await sql<CodeRow[]>`
     SELECT DISTINCT p.code
     FROM permissions p
@@ -23,7 +28,7 @@ export async function getPermissionsByUserId(userId: string): Promise<Permission
 }
 
 export async function getRolesByUserId(userId: string): Promise<string[]> {
-  const sql = useDb()
+  const sql = getDb()
   const rows = await sql<CodeRow[]>`
     SELECT r.code
     FROM roles r
@@ -35,10 +40,19 @@ export async function getRolesByUserId(userId: string): Promise<string[]> {
   return rows.map((row) => row.code)
 }
 
-export async function assignRoleToUser(userId: string, roleCode: string): Promise<void> {
-  const sql = useDb()
-  const [role] = await sql<RoleIdRow[]>`SELECT id FROM roles WHERE code = ${roleCode}`
+export async function assignRoleToUser(
+  userId: string,
+  roleCode: string
+): Promise<void> {
+  const sql = getDb()
+  const [user, role] = await Promise.all([
+    findAuthUserById(userId),
+    sql<RoleIdRow[]>`SELECT id FROM roles WHERE code = ${roleCode}`.then(
+      ([row]) => row
+    ),
+  ])
 
+  if (!user) throw new Error("User not found")
   if (!role) throw new Error(`RBAC role not found: ${roleCode}`)
 
   await sql`
@@ -48,8 +62,11 @@ export async function assignRoleToUser(userId: string, roleCode: string): Promis
   `
 }
 
-export async function revokeRoleFromUser(userId: string, roleCode: string): Promise<void> {
-  const sql = useDb()
+export async function revokeRoleFromUser(
+  userId: string,
+  roleCode: string
+): Promise<void> {
+  const sql = getDb()
   await sql`
     DELETE FROM user_roles ur
     USING roles r
@@ -59,14 +76,10 @@ export async function revokeRoleFromUser(userId: string, roleCode: string): Prom
   `
 }
 
-export async function getUserWithRolesAndPermissions(userId: string): Promise<UserWithRolesAndPermissions | null> {
-  const sql = useDb()
-  const [user] = await sql<UserRow[]>`
-    SELECT id, email, name
-    FROM users
-    WHERE id = ${userId}
-  `
-
+export async function getUserWithRolesAndPermissions(
+  userId: string
+): Promise<UserWithRolesAndPermissions | null> {
+  const user = await findAuthUserById(userId)
   if (!user) return null
 
   const [roles, permissions] = await Promise.all([

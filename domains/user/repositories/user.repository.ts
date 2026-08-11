@@ -1,21 +1,22 @@
 import "server-only"
 
-import { useDb } from "@/shared/lib/db/db.server"
+import { useDb as getDb } from "@/shared/lib/db/db.server"
 
-export type UpsertAuthUserInput = {
+export type AuthUserRecord = {
   id: string
-  email?: string | null
-  name?: string | null
+  email: string
+  name: string
 }
 
-export async function upsertAuthUser(input: UpsertAuthUserInput): Promise<void> {
-  const sql = useDb()
-  await sql`
-    INSERT INTO users (id, email, name)
-    VALUES (${input.id}, ${input.email ?? null}, ${input.name ?? null})
-    ON CONFLICT (id) DO UPDATE
-    SET email = EXCLUDED.email,
-        name = EXCLUDED.name,
-        updated_at = NOW()
+export async function findAuthUserById(
+  userId: string
+): Promise<AuthUserRecord | null> {
+  const sql = getDb()
+  const [user] = await sql<AuthUserRecord[]>`
+    SELECT id, email, name
+    FROM neon_auth."user"
+    WHERE id = ${userId}
   `
+
+  return user ?? null
 }
