@@ -3,7 +3,6 @@
 import * as React from "react"
 
 import { NavMain } from "@/shared/components/dashboard/nav-main"
-import { NavProjects } from "@/shared/components/dashboard/nav-projects"
 import { NavSecondary } from "@/shared/components/dashboard/nav-secondary"
 import { NavUser } from "@/shared/components/dashboard/nav-user"
 import {
@@ -16,123 +15,50 @@ import {
   SidebarMenuItem,
 } from "@/shared/components/ui/sidebar"
 import {
+  IconBell,
   IconBox,
-  IconCategory,
-  IconChartBar,
+  IconBuildingStore,
   IconCommand,
   IconCreditCard,
   IconDashboard,
-  IconDiscount2,
-  IconHelp,
-  IconLifebuoy,
-  IconMessage,
   IconPackage,
-  IconReceipt,
-  IconReceipt2,
   IconSettings,
-  IconShieldLock,
   IconShoppingCart,
   IconTruck,
   IconUsers,
 } from "@tabler/icons-react"
+
 const data = {
   user: {
     name: "Administrator",
     email: "admin@nnqa.store",
     avatar: "/avatars/admin.png",
   },
-
   navMain: [
     {
       title: "Dashboard",
-      url: "/",
+      url: "/dashboard",
       icon: <IconDashboard />,
       isActive: true,
     },
+    { title: "Users", url: "/dashboard/users", icon: <IconUsers /> },
+    { title: "Shops", url: "/dashboard/shops", icon: <IconBuildingStore /> },
+    { title: "Products", url: "/dashboard/product", icon: <IconPackage /> },
+    { title: "Orders", url: "/dashboard/orders", icon: <IconShoppingCart /> },
+    { title: "Inventory", url: "/dashboard/inventory", icon: <IconBox /> },
+    { title: "Payments", url: "/dashboard/payments", icon: <IconCreditCard /> },
+    { title: "Shipments", url: "/dashboard/shipments", icon: <IconTruck /> },
     {
-      title: "Catalog",
-      url: "/catalog",
-      icon: <IconBox />,
-      items: [
-        { title: "Products", url: "/products" },
-        { title: "Categories", url: "/categories" },
-        { title: "Brands", url: "/brands" },
-        { title: "Inventory", url: "/inventory" },
-      ],
-    },
-    {
-      title: "Orders",
-      url: "/orders",
-      icon: <IconShoppingCart />,
-      items: [
-        { title: "All Orders", url: "/orders" },
-        { title: "Returns", url: "/returns" },
-        { title: "Shipping", url: "/shipping" },
-      ],
-    },
-    {
-      title: "Customers",
-      url: "/customers",
-      icon: <IconUsers />,
-      items: [
-        { title: "Customers", url: "/customers" },
-        { title: "Reviews", url: "/reviews" },
-      ],
-    },
-    {
-      title: "System",
-      url: "/system",
-      icon: <IconShieldLock />,
-      items: [
-        { title: "Users", url: "/users" },
-        { title: "Roles", url: "/roles" },
-        { title: "Permissions", url: "/permissions" },
-      ],
+      title: "Notifications",
+      url: "/dashboard/notifications",
+      icon: <IconBell />,
     },
   ],
-
-  // Thay "Projects" thành các module truy cập nhanh
-  projects: [
-    {
-      name: "Products",
-      url: "/products",
-      icon: <IconPackage />,
-    },
-    {
-      name: "Orders",
-      url: "/orders",
-      icon: <IconReceipt2 />,
-    },
-    {
-      name: "Customers",
-      url: "/customers",
-      icon: <IconUsers />,
-    },
-    {
-      name: "Analytics",
-      url: "/analytics",
-      icon: <IconChartBar />,
-    },
-  ],
-
   navSecondary: [
-    {
-      title: "Settings",
-      url: "/settings",
-      icon: <IconSettings />,
-    },
-    {
-      title: "Support",
-      url: "/support",
-      icon: <IconLifebuoy />,
-    },
-    {
-      title: "Feedback",
-      url: "/feedback",
-      icon: <IconMessage />,
-    },
+    { title: "Settings", url: "/dashboard/settings", icon: <IconSettings /> },
   ],
 }
+
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   return (
     <Sidebar
@@ -142,13 +68,13 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size="lg" render={<a href="#" />}>
+            <SidebarMenuButton size="lg" render={<a href="/dashboard" />}>
               <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-sidebar-primary text-sidebar-primary-foreground">
                 <IconCommand className="size-4" />
               </div>
               <div className="grid flex-1 text-left text-sm leading-tight">
                 <span className="truncate font-medium">Nnqa Inc</span>
-                <span className="truncate text-xs">Enterprise</span>
+                <span className="truncate text-xs">Marketplace admin</span>
               </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
@@ -156,7 +82,6 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
-        <NavProjects projects={data.projects} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
       <SidebarFooter>

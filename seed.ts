@@ -1,6 +1,7 @@
 import "dotenv/config";
 
 import { useDb } from "./shared/lib/db/db.cli";
+import { seedRbac } from "./domains/user/data/rbac.seed";
 
 
 
@@ -15,6 +16,8 @@ export async function runSeed(): Promise<void> {
 
   try {
     console.log("🌱  Starting seed…");
+    await seedRbac(sql);
+    console.log("✅  Seeded RBAC roles and permissions.");
 
     await sql`DELETE FROM products`;
     await sql`DELETE FROM shops`;

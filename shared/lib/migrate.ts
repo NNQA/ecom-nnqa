@@ -3,6 +3,7 @@
  * Run with: bun run lib/migrate.ts
  */
 import postgres from "postgres";
+import { migrateRbac } from "@/domains/user/migrations/rbac.migration";
 import * as dotenv from "fs";
 
 // Manually load .env since we're outside Next.js
@@ -101,6 +102,9 @@ async function migrate() {
     )
   `;
   console.log("✅  Created table: products");
+
+  await migrateRbac(sql);
+  console.log("✅  Created RBAC tables: users, roles, permissions, user_roles, role_permissions");
 
   await sql.end();
   console.log("🎉  Migration complete — all tables created successfully.");
