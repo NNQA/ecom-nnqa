@@ -16,7 +16,7 @@ function PageStandardUser() {
             <Label htmlFor='view-selector' className='sr-only'>
                 View
             </Label>
-            <Select defaultValue={ }>
+            <Select >
 
             </Select>
             <Card>
