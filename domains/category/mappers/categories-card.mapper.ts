@@ -1,20 +1,20 @@
 import { Category } from "../entities/categories.entities";
 import { CategoryCard } from "../pages";
-import { categoryDescriptionMap, categoryGroupMap, categoryIconMap, defaultCategoryIcon } from "./categories-ui";
+import { categoryDescriptionMap, categoryGroupMap, categoryIconMap } from "./categories-ui";
 
 export function toCategoryCards(categories: Category[]): CategoryCard[] {
     const childCount = new Map<number, number>();
 
     for (const category of categories) {
-        if (category.parent_id == null) continue;
+        if (category.parentId == null) continue;
 
         childCount.set(
-            category.parent_id,
-            (childCount.get(category.parent_id) ?? 0) + 1
+            category.parentId,
+            (childCount.get(category.parentId) ?? 0) + 1
         );
     }
     const parentCategories = categories
-        .filter(category => category.parent_id === null)
+        .filter(category => category.parentId === null)
         .map(parent => ({
             id: parent.id,
             name: parent.name,
@@ -34,3 +34,4 @@ export function toCategoryCards(categories: Category[]): CategoryCard[] {
         }));
     return parentCategories
 }
+

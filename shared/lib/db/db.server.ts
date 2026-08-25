@@ -5,6 +5,6 @@ import { createDb } from "./db";
 
 const db = remember("db", createDb);
 
-export function useDb() {
+export function getDb() {
     return db;
 }

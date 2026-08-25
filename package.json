@@ -10,7 +10,7 @@
     "lint": "eslint",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
-    "db:migrate": "bun scripts/migrate.ts",
+    "db:migrate": "tsx shared/lib/migrate.ts",
     "db:seed": "bun scripts/seed.ts"
   },
   "dependencies": {
@@ -58,3 +58,4 @@
     "unplugin-icons": "^23.0.1"
   }
 }
+

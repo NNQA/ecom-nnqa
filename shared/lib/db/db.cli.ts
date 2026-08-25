@@ -19,7 +19,7 @@ const db = remember("db", () => {
     return createDb();
 });
 
-export function useDb() {
+export function getDb() {
     return db;
 }
 

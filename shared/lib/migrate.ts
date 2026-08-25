@@ -1,116 +1,29 @@
-/**
- * Schema migration — drops and recreates all tables per update.md Task 1.
- * Run with: bun run lib/migrate.ts
- */
-import postgres from "postgres";
-import { migrateRbac } from "@/domains/user/migrations/rbac.migration";
-import * as dotenv from "fs";
+import "dotenv/config"
+import postgres, { type TransactionSql } from "postgres"
+import { migrateCategories } from "@/domains/category/migrations/001_categories"
+import { migrateUserManagement } from "@/domains/user/migrations/rbac.migration"
 
-// Manually load .env since we're outside Next.js
-const envPath = new URL("../../.env", import.meta.url).pathname;
-try {
-  const raw = dotenv.readFileSync(envPath, "utf-8");
-  for (const line of raw.split("\n")) {
-    const trimmed = line.trim();
-    if (!trimmed || trimmed.startsWith("#")) continue;
-    const eqIdx = trimmed.indexOf("=");
-    if (eqIdx === -1) continue;
-    const key = trimmed.slice(0, eqIdx).trim();
-    const val = trimmed.slice(eqIdx + 1).trim();
-    if (!process.env[key]) process.env[key] = val;
+type Migration = { id: string; up: (sql: TransactionSql) => Promise<void> }
+const migrations: Migration[] = [
+  { id: "001_user_rbac", up: migrateUserManagement },
+  { id: "002_category", up: migrateCategories },
+]
+const databaseUrl = process.env.DATABASE_URL
+if (!databaseUrl) throw new Error("DATABASE_URL is not set")
+const sql = postgres(databaseUrl, { ssl: "require", max: 1, idle_timeout: 20, connect_timeout: 10, prepare: false })
+async function runMigrations() {
+  await sql`CREATE TABLE IF NOT EXISTS schema_migrations (id TEXT PRIMARY KEY, applied_at TIMESTAMPTZ NOT NULL DEFAULT NOW())`
+  const appliedRows = await sql<{ id: string }[]>`SELECT id FROM schema_migrations ORDER BY id`
+  const applied = new Set(appliedRows.map((row) => row.id))
+  for (const migration of migrations) {
+    if (applied.has(migration.id)) { console.log(`Skipping ${migration.id}`); continue }
+    console.log(`Applying ${migration.id}`)
+    await sql.begin(async (transaction) => {
+      await migration.up(transaction)
+      await transaction`INSERT INTO schema_migrations (id) VALUES (${migration.id})`
+    })
+    console.log(`Applied ${migration.id}`)
   }
-} catch {
-  // .env may not exist in production — rely on real env vars
 }
+try { await runMigrations(); console.log("Migrations complete") } finally { await sql.end() }
 
-const DATABASE_URL = process.env.DATABASE_URL;
-if (!DATABASE_URL) {
-  console.error("❌  DATABASE_URL is not set.");
-  process.exit(1);
-}
-
-const sql = postgres(DATABASE_URL, {
-  ssl: "require",
-  max: 1,
-  idle_timeout: 20,
-  connect_timeout: 10,
-  prepare: false,
-});
-
-async function migrate() {
-  console.log("🔄  Connecting to Neon DB…");
-
-  // ── Drop existing tables ───────────────────────────────────────────────────
-  await sql`DROP TABLE IF EXISTS products, brands, categories, shops CASCADE`;
-  console.log("🗑   Dropped existing tables.");
-
-  // ── brands ─────────────────────────────────────────────────────────────────
-  await sql`
-    CREATE TABLE brands (
-      id   SERIAL PRIMARY KEY,
-      name TEXT NOT NULL,
-      slug TEXT UNIQUE NOT NULL
-    )
-  `;
-  console.log("✅  Created table: brands");
-
-  // ── categories ─────────────────────────────────────────────────────────────
-  await sql`
-    CREATE TABLE categories (
-      id        SERIAL PRIMARY KEY,
-      parent_id INT REFERENCES categories(id),
-      name      TEXT NOT NULL,
-      slug      TEXT UNIQUE NOT NULL
-    )
-  `;
-  console.log("✅  Created table: categories");
-
-  // ── shops ──────────────────────────────────────────────────────────────────
-  await sql`
-    CREATE TABLE shops (
-      id        SERIAL PRIMARY KEY,
-      owner_id  TEXT NOT NULL,
-      name      TEXT NOT NULL,
-      slug      TEXT UNIQUE NOT NULL,
-      is_active BOOLEAN DEFAULT TRUE
-    )
-  `;
-  console.log("✅  Created table: shops");
-
-  // ── products ───────────────────────────────────────────────────────────────
-  await sql`
-    CREATE TABLE products (
-      id          SERIAL PRIMARY KEY,
-      shop_id     INT REFERENCES shops(id),
-      category_id INT REFERENCES categories(id),
-      brand_id    INT REFERENCES brands(id),
-      sku         TEXT UNIQUE NOT NULL,
-      name        TEXT NOT NULL,
-      slug        TEXT UNIQUE NOT NULL,
-      description TEXT,
-      price       NUMERIC(12, 2) NOT NULL,
-      image_urls  TEXT[]  DEFAULT '{}',
-      stock       INT     DEFAULT 0,
-      sales_count INT     DEFAULT 0,
-      rating_avg  NUMERIC(3, 2) DEFAULT 0,
-      rating_count INT    DEFAULT 0,
-      attributes  JSONB   DEFAULT '{}',
-      is_active   BOOLEAN DEFAULT TRUE,
-      is_featured BOOLEAN DEFAULT FALSE,
-      created_at  TIMESTAMPTZ DEFAULT NOW(),
-      updated_at  TIMESTAMPTZ DEFAULT NOW()
-    )
-  `;
-  console.log("✅  Created table: products");
-
-  await migrateRbac(sql);
-  console.log("✅  Created RBAC tables: users, roles, permissions, user_roles, role_permissions");
-
-  await sql.end();
-  console.log("🎉  Migration complete — all tables created successfully.");
-}
-
-migrate().catch((err) => {
-  console.error("❌  Migration failed:", err);
-  process.exit(1);
-});
