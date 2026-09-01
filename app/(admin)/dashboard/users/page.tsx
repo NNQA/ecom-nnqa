@@ -33,7 +33,7 @@ export default async function Page({
         : undefined,
     roleId: isUuid(params.role) ? params.role : undefined,
     page: Math.max(Number(params.page) || 1, 1),
-    pageSize: params.pageSize ?? 7
+    pageSize: params.pageSize ?? 7,
   }
   const [result, roles] = await Promise.all([
     getUsers(filters),

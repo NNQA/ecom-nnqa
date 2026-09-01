@@ -31,6 +31,7 @@ pnpm-debug.log*
 # env files
 .env*.local
 .env
+skills-lock.json
 # typescript
 *.tsbuildinfo
 next-env.d.ts

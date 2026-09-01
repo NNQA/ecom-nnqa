@@ -1,6 +1,6 @@
 import "server-only"
 
-import { useDb as getDb } from "@/shared/lib/db/db.server"
+import { getDb as getDb } from "@/shared/lib/db/db.server"
 
 import type {
   UpdateUserProfileInput,

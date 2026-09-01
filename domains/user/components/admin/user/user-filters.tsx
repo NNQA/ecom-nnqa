@@ -34,7 +34,7 @@ export function UserFilters({
   const [query, setQuery] = useState(filters.query ?? "")
 
   const hasActiveFilters = Boolean(
-    filters.query || filters.status || filters.roleId,
+    filters.query || filters.status || filters.roleId
   )
 
   const selectedStatus = STATUS_OPTIONS.find((s) => s.value === filters.status)
@@ -49,8 +49,7 @@ export function UserFilters({
     const params = new URLSearchParams()
     const merged = {
       q: next.q !== undefined ? next.q : (filters.query ?? ""),
-      status:
-        next.status !== undefined ? next.status : (filters.status ?? ""),
+      status: next.status !== undefined ? next.status : (filters.status ?? ""),
       role: next.role !== undefined ? next.role : (filters.roleId ?? ""),
     }
     if (merged.q) params.set("q", merged.q)
@@ -64,13 +63,13 @@ export function UserFilters({
   return (
     <div className="flex flex-wrap items-center justify-between">
       <form
-        className="relative flex-1 max-w-72"
+        className="relative max-w-72 flex-1"
         onSubmit={(e) => {
           e.preventDefault()
           navigate({ q: query })
         }}
       >
-        <Search className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+        <Search className="pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2 text-muted-foreground" />
         <Input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -96,12 +95,13 @@ export function UserFilters({
                 ) : (
                   <ListFilter className="size-3.5 text-muted-foreground" />
                 )}
-                <span>Status{selectedStatus ? `: ${selectedStatus.label}` : ""}</span>
+                <span>
+                  Status{selectedStatus ? `: ${selectedStatus.label}` : ""}
+                </span>
                 <ChevronDown className="size-3.5 text-muted-foreground" />
               </Button>
             }
-          >
-          </DropdownMenuTrigger>
+          ></DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-44">
             <DropdownMenuItem
               onClick={() => navigate({ status: null })}
@@ -143,8 +143,7 @@ export function UserFilters({
                 <ChevronDown className="size-3.5 text-muted-foreground" />
               </Button>
             }
-          >
-          </DropdownMenuTrigger>
+          ></DropdownMenuTrigger>
           <DropdownMenuContent align="start" className="w-48">
             <DropdownMenuItem
               onSelect={() => navigate({ role: null })}

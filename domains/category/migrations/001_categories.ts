@@ -8,4 +8,3 @@ export async function migrateCategories(sql: TransactionSql): Promise<void> {
   await sql`CREATE UNIQUE INDEX IF NOT EXISTS categories_slug_unique_idx ON categories(slug)`
   await sql`CREATE INDEX IF NOT EXISTS categories_parent_id_idx ON categories(parent_id)`
 }
-

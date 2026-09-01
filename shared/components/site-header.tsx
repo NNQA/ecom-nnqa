@@ -41,10 +41,7 @@ export function SiteHeader() {
           <IconLayoutSidebar />
         </Button>
 
-        <Separator
-          orientation="vertical"
-          className="mr-2 data-vertical:h-4"
-        />
+        <Separator orientation="vertical" className="mr-2 data-vertical:h-4" />
 
         <Breadcrumb className="hidden md:block">
           <BreadcrumbList>

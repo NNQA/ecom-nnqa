@@ -1,1 +1,1 @@
-export { default as IconHome } from "~icons/tabler/home";
+export { default as IconHome } from "~icons/tabler/home"

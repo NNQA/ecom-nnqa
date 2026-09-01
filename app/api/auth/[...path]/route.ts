@@ -1,3 +1,3 @@
-import { auth } from "@/shared/lib/auth/server-auth";
+import { auth } from "@/shared/lib/auth/server-auth"
 
-export const { GET, POST } = auth.handler();
+export const { GET, POST } = auth.handler()

@@ -1,10 +1,10 @@
-import "server-only";
+import "server-only"
 
-import { remember } from "@epic-web/remember";
-import { createDb } from "./db";
+import { remember } from "@epic-web/remember"
+import { createDb } from "./db"
 
-const db = remember("db", createDb);
+const db = remember("db", createDb)
 
 export function getDb() {
-    return db;
+  return db
 }

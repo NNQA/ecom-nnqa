@@ -6,10 +6,14 @@ import { IconSearch } from "@tabler/icons-react"
 import { cn } from "../lib/utils"
 
 interface SearchFormProps extends React.ComponentProps<"form"> {
-  className?: string,
-  placeholdertext?: string,
+  className?: string
+  placeholdertext?: string
 }
-export function SearchForm({ className, placeholdertext, ...props }: SearchFormProps) {
+export function SearchForm({
+  className,
+  placeholdertext,
+  ...props
+}: SearchFormProps) {
   return (
     <form {...props} className={cn(className)}>
       <div className="relative">

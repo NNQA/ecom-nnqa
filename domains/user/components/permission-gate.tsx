@@ -10,10 +10,17 @@ type PermissionGateProps = {
   userId?: string
 }
 
-export async function PermissionGate({ permission, children, fallback = null, userId }: PermissionGateProps) {
+export async function PermissionGate({
+  permission,
+  children,
+  fallback = null,
+  userId,
+}: PermissionGateProps) {
   try {
     const resolvedUserId = userId ?? (await getCurrentUserId())
-    return (await hasPermission(resolvedUserId, permission)) ? children : fallback
+    return (await hasPermission(resolvedUserId, permission))
+      ? children
+      : fallback
   } catch {
     return fallback
   }

@@ -55,8 +55,7 @@ export function NavMain({
                   render={<CollapsibleTrigger />}
                   className="aria-expanded:rotate-90"
                 >
-                  <IconChevronRight
-                  />
+                  <IconChevronRight />
                   <span className="sr-only">Toggle</span>
                 </SidebarMenuAction>
                 <CollapsibleContent>

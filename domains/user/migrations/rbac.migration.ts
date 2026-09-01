@@ -1,6 +1,8 @@
-import type { Sql } from "postgres"
+import type { TransactionSql } from "postgres"
 
-export async function migrateUserManagement(sql: Sql): Promise<void> {
+export async function migrateUserManagement(
+  sql: TransactionSql
+): Promise<void> {
   await sql`
     CREATE TABLE IF NOT EXISTS profiles (
       user_id UUID PRIMARY KEY REFERENCES neon_auth."user"(id) ON DELETE CASCADE,
