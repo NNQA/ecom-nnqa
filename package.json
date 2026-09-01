@@ -11,7 +11,8 @@
     "format": "prettier --write \"**/*.{ts,tsx}\"",
     "typecheck": "tsc --noEmit",
     "db:migrate": "tsx shared/lib/migrate.ts",
-    "db:seed": "bun scripts/seed.ts"
+    "db:seed": "tsx shared/lib/seed.ts",
+    "db:seed:users": "tsx shared/lib/user-seed.ts"
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
@@ -58,4 +59,3 @@
     "unplugin-icons": "^23.0.1"
   }
 }
-

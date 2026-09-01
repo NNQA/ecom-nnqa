@@ -1,10 +1,14 @@
-import type { Sql } from "postgres"
+import type { Sql, TransactionSql } from "postgres"
 
 const permissions = [
   ["category:read", "Read categories", "View category data"],
   ["category:create", "Create categories", "Create categories"],
   ["category:update", "Update categories", "Update categories"],
   ["category:delete", "Delete categories", "Delete categories"],
+  ["product:read", "Read products", "View product data"],
+  ["product:create", "Create products", "Create products"],
+  ["product:update", "Update products", "Update products"],
+  ["product:delete", "Delete products", "Delete products"],
   ["order:read", "Read orders", "View orders"],
   ["order:manage", "Manage orders", "Create and update orders"],
   ["user:manage", "Manage users", "Manage users and their roles"],
@@ -16,22 +20,23 @@ const permissions = [
 ] as const
 
 const rolePermissions: Record<
-  "SUPER_ADMIN" | "ADMIN" | "STAFF" | "CUSTOMER",
+  "SUPER_ADMIN" | "STORE_OWNER" | "STORE_STAFF" | "CUSTOMER" | "SUPPORT",
   readonly string[]
 > = {
   SUPER_ADMIN: permissions.map(([code]) => code),
-  ADMIN: permissions.map(([code]) => code),
-  STAFF: [
+  STORE_OWNER: ["product:read", "product:create", "product:update", "product:delete", "order:read", "order:manage"],
+  STORE_STAFF: [
     "category:read",
     "category:create",
     "category:update",
     "order:read",
     "order:manage",
   ],
-  CUSTOMER: ["category:read", "order:read"],
+  CUSTOMER: ["category:read", "product:read", "order:read"],
+  SUPPORT: ["category:read", "product:read", "order:read", "user:read"],
 }
 
-export async function seedRbac(sql: Sql): Promise<void> {
+export async function seedRbac(sql: Sql | TransactionSql): Promise<void> {
   for (const [code, name, description] of permissions) {
     await sql`
       INSERT INTO permissions (code, name, description)
@@ -42,8 +47,9 @@ export async function seedRbac(sql: Sql): Promise<void> {
 
   for (const [code, name] of [
     ["SUPER_ADMIN", "Super administrator"],
-    ["ADMIN", "Administrator"],
-    ["STAFF", "Staff"],
+    ["STORE_OWNER", "Store owner"],
+    ["STORE_STAFF", "Store staff"],
+    ["SUPPORT", "Customer support"],
     ["CUSTOMER", "Customer"],
   ] as const) {
     await sql`
@@ -84,8 +90,8 @@ export async function seedRbac(sql: Sql): Promise<void> {
   }
 
   for (const [email, roleCode] of [
-    ["admin@example.com", "ADMIN"],
-    ["staff@example.com", "STAFF"],
+    ["admin@example.com", "SUPER_ADMIN"],
+    ["staff@example.com", "STORE_STAFF"],
     ["customer@example.com", "CUSTOMER"],
     ["banned@example.com", "CUSTOMER"],
     ["multi-role@example.com", "STAFF"],
